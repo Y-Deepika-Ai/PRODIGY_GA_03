@@ -1,0 +1,46 @@
+import random
+
+def build_markov_chain(text, n=2):
+    words = text.split()
+    markov_chain = {}
+    for i in range(len(words) - n):
+        state = tuple(words[i:i + n - 1])
+        next_word = words[i + n - 1]      
+
+        if state not in markov_chain:
+            markov_chain[state] = []
+        markov_chain[state].append(next_word)
+
+    return markov_chain
+
+def generate_text(markov_chain, n=2, length=50):
+    if not markov_chain:
+        return "Error: Markov chain is empty!"
+
+    state = random.choice(list(markov_chain.keys()))
+    
+    while not markov_chain[state]:
+        state = random.choice(list(markov_chain.keys()))
+
+    generated_text = list(state)
+
+    for _ in range(length - n + 1):
+        if state not in markov_chain or not markov_chain[state]:
+            break  
+        next_word = random.choice(markov_chain[state])
+        generated_text.append(next_word)
+
+        state = tuple(generated_text[-(n - 1):])
+
+    return ' '.join(generated_text)
+
+if __name__ == "__main__":
+  
+    user_input = input("Enter some text: ")
+
+    markov_chain = build_markov_chain(user_input, n=2)
+
+    generated_text = generate_text(markov_chain, n=2, length=10)
+
+    print("\nGenerated Text:")
+    print(generated_text)
